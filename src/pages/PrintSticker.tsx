@@ -86,7 +86,7 @@ export default function PrintSticker() {
       const barImg = barcodeDataUrl(barcode);
       return `
         <div class="sticker">
-          <div class="header">The Pilito</div>
+          <div class="header">امريكا اكسبريس</div>
           <div class="date">${new Date(order.created_at).toLocaleDateString('ar-EG')}</div>
           ${barImg ? `<img class="bar-img" src="${barImg}" alt="barcode"/>` : ''}
           <div class="barcode-num">${barcode}</div>
@@ -143,7 +143,7 @@ export default function PrintSticker() {
             <div class="brand">
               <div class="brand-mark">TP</div>
               <div class="brand-text">
-                <h1>The Pilito</h1>
+                <h1>امريكا اكسبريس</h1>
                 <p>نظام التوصيل والشحن</p>
               </div>
             </div>
@@ -196,12 +196,12 @@ export default function PrintSticker() {
             <div class="sign"><span>الختم</span><div class="line"></div></div>
           </div>
 
-          <footer class="foot">شكراً لتعاملكم مع The Pilito — للاستفسار يرجى ذكر رقم التتبع</footer>
+          <footer class="foot">شكراً لتعاملكم مع امريكا اكسبريس — للاستفسار يرجى ذكر رقم التتبع</footer>
         </section>`;
     }).join('');
 
     printWindow.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8">
-      <title>فواتير - The Pilito</title>
+      <title>فواتير - امريكا اكسبريس</title>
       <link rel="preconnect" href="https://fonts.googleapis.com">
       <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
       <style>
