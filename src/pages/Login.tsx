@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Lock, Loader2 } from 'lucide-react';
-import logo from '@/assets/logo.jpg';
+import logo from '@/assets/logo.png';
 
 export default function Login() {
   const [password, setPassword] = useState('');
@@ -40,7 +40,7 @@ export default function Login() {
               <img
                 src={logo}
                 alt="امريكا اكسبريس"
-                className="relative h-24 w-24 rounded-2xl object-cover shadow-glow"
+                className="relative h-24 w-24 rounded-2xl object-contain shadow-glow"
               />
             </div>
             <h1 className="text-3xl font-display font-extrabold uppercase tracking-[0.15em] text-foreground neon-text">
