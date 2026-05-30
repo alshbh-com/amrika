@@ -40,7 +40,7 @@ export default function Login() {
               <img
                 src={logo}
                 alt="امريكا اكسبريس"
-                className="relative h-24 w-24 rounded-2xl object-cover shadow-glow"
+                className="relative h-24 w-24 rounded-2xl object-contain shadow-glow"
               />
             </div>
             <h1 className="text-3xl font-display font-extrabold uppercase tracking-[0.15em] text-foreground neon-text">
