@@ -195,7 +195,15 @@ Deno.serve(async (req) => {
 
 
     const email = codeToEmail(password)
-    let { data, error } = await supabaseAdmin.auth.signInWithPassword({ email, password })
+    // Sign in with the ANON client so the returned session has a proper,
+    // fully-refreshable refresh token (service-role sessions can fail to
+    // refresh on the client, which logs users out after the token expires).
+    const supabaseAuth = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_ANON_KEY')!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    )
+    let { data, error } = await supabaseAuth.auth.signInWithPassword({ email, password })
 
     if (error) {
       return new Response(JSON.stringify({ error: 'كلمة المرور غير صحيحة' }), {
