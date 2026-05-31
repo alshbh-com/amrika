@@ -26,12 +26,41 @@ export function useAuth() {
   return ctx;
 }
 
+const ROLES_CACHE_KEY = 'app_roles_cache';
+
+function readCachedRoles(userId: string): AppRole[] {
+  try {
+    const raw = localStorage.getItem(ROLES_CACHE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as { userId: string; roles: AppRole[] };
+    if (parsed.userId === userId && Array.isArray(parsed.roles)) return parsed.roles;
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+function writeCachedRoles(userId: string, roles: AppRole[]) {
+  try {
+    localStorage.setItem(ROLES_CACHE_KEY, JSON.stringify({ userId, roles }));
+  } catch {
+    /* ignore storage errors */
+  }
+}
+
+function clearCachedRoles() {
+  try {
+    localStorage.removeItem(ROLES_CACHE_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
-  const initializedRef = useRef(false);
   const skipNextRoleFetch = useRef(false);
 
   const fetchRoles = async (userId: string): Promise<AppRole[]> => {
@@ -46,13 +75,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // Refresh roles in the background WITHOUT ever downgrading the user on a
+  // transient empty/failed fetch. This prevents the owner from being kicked
+  // out when a token refresh or slow network returns no rows momentarily.
+  const refreshRolesSafely = async (userId: string) => {
+    const fresh = await fetchRoles(userId);
+    if (fresh.length > 0) {
+      setRoles(fresh);
+      writeCachedRoles(userId, fresh);
+    }
+  };
+
   useEffect(() => {
     let mounted = true;
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, sess) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, sess) => {
       if (!mounted) return;
-      
+
       if (event === 'SIGNED_OUT') {
+        clearCachedRoles();
         setSession(null);
         setUser(null);
         setRoles([]);
@@ -65,18 +106,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(sess?.user ?? null);
 
         if (sess?.user) {
+          // Use cached roles immediately so we never bounce the user while
+          // the network request is in flight.
+          const cached = readCachedRoles(sess.user.id);
+          if (cached.length > 0) setRoles(cached);
+          setLoading(false);
+
           if (skipNextRoleFetch.current) {
             skipNextRoleFetch.current = false;
-            setLoading(false);
             return;
           }
-          setTimeout(async () => {
-            if (!mounted) return;
-            const userRoles = await fetchRoles(sess.user.id);
-            if (mounted) {
-              setRoles(userRoles);
-              setLoading(false);
-            }
+          // Fire-and-forget background refresh (no await inside the callback).
+          setTimeout(() => {
+            if (mounted) void refreshRolesSafely(sess.user.id);
           }, 0);
         } else {
           setRoles([]);
@@ -85,29 +127,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
-    supabase.auth.getSession().then(async ({ data: { session: sess }, error }) => {
+    supabase.auth.getSession().then(({ data: { session: sess } }) => {
       if (!mounted) return;
-      if (error || !sess) {
-        setSession(null);
-        setUser(null);
-        setRoles([]);
-        setLoading(false);
-        if (error) {
-          await supabase.auth.signOut();
-        }
-        return;
-      }
+      // INITIAL_SESSION already handles state; only resolve loading if there
+      // is genuinely no session so the login screen can show.
+      if (!sess) setLoading(false);
     });
-
-    const timeout = setTimeout(() => {
-      if (mounted && loading) {
-        setLoading(false);
-      }
-    }, 5000);
 
     return () => {
       mounted = false;
-      clearTimeout(timeout);
       subscription.unsubscribe();
     };
   }, []);
@@ -132,12 +160,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (data.session) {
         const userRoles = (data.roles || []) as AppRole[];
         setRoles(userRoles);
+        if (data.session.user?.id) writeCachedRoles(data.session.user.id, userRoles);
         skipNextRoleFetch.current = true;
         
-        await supabase.auth.setSession({
+        const { error: setErr } = await supabase.auth.setSession({
           access_token: data.session.access_token,
           refresh_token: data.session.refresh_token,
         });
+        if (setErr) return { error: 'تعذر حفظ الجلسة، حاول مرة أخرى' };
       }
       return {};
     } catch {
@@ -146,6 +176,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
+    clearCachedRoles();
     setRoles([]);
     setSession(null);
     setUser(null);
