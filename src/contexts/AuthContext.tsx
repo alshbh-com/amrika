@@ -62,6 +62,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
   const manualLogoutRef = useRef(false);
+  const authReadyRef = useRef(false);
+  const validatedUserIdRef = useRef<string | null>(null);
+  const validationRunRef = useRef(0);
 
   const fetchRoles = async (userId: string): Promise<AppRole[]> => {
     try {
@@ -90,10 +93,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
+    const validateSession = (sess: Session, runId: number, attempt = 0) => {
+      setTimeout(() => {
+        if (!mounted || validationRunRef.current !== runId) return;
+        void supabase.auth.getUser().then(({ data: { user: validatedUser } }) => {
+          if (!mounted || validationRunRef.current !== runId) return;
+
+          if (validatedUser?.id === sess.user.id) {
+            authReadyRef.current = true;
+            validatedUserIdRef.current = sess.user.id;
+            setLoading(false);
+            void refreshRolesSafely(sess.user.id);
+            return;
+          }
+
+          if (attempt < 4) {
+            validateSession(sess, runId, attempt + 1);
+            return;
+          }
+
+          applySession(null);
+        }).catch(() => {
+          if (!mounted || validationRunRef.current !== runId) return;
+          if (attempt < 4) validateSession(sess, runId, attempt + 1);
+          else applySession(null);
+        });
+      }, attempt === 0 ? 0 : 300);
+    };
+
     // Apply a session coming from Supabase's native (localStorage) persistence.
-    // We do NOT keep a second copy of the session ourselves — Supabase is the
-    // single source of truth and handles token refresh. We only cache ROLES to
-    // avoid a flicker before the background role fetch resolves.
+    // We wait until getUser() validates the restored token before pages mount,
+    // so authenticated tables do not briefly query as anon and overwrite data.
     const applySession = (sess: Session | null) => {
       if (!mounted) return;
 
@@ -102,15 +132,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(sess.user);
         const cached = readCachedRoles(sess.user.id);
         if (cached.length > 0) setRoles(cached);
-        setLoading(false);
-        // Background refresh (never clears roles on empty result).
-        setTimeout(() => {
-          if (mounted) void refreshRolesSafely(sess.user.id);
-        }, 0);
+        if (authReadyRef.current && validatedUserIdRef.current === sess.user.id) {
+          setLoading(false);
+          void refreshRolesSafely(sess.user.id);
+          return;
+        }
+        setLoading(true);
+        const runId = ++validationRunRef.current;
+        validateSession(sess, runId);
         return;
       }
 
       // No session. Only clear app state on a genuine sign-out.
+      authReadyRef.current = false;
+      validatedUserIdRef.current = null;
+      validationRunRef.current += 1;
       setSession(null);
       setUser(null);
       setRoles([]);
