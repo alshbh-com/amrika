@@ -107,16 +107,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             return;
           }
 
-          if (attempt < 4) {
+          if (attempt < 8) {
             validateSession(sess, runId, attempt + 1);
             return;
           }
 
-          applySession(null);
+          void supabase.auth.refreshSession().then(({ data: { session: refreshed } }) => {
+            if (!mounted || validationRunRef.current !== runId) return;
+            if (refreshed?.user?.id === sess.user.id) applySession(refreshed);
+            else applySession(null);
+          });
         }).catch(() => {
           if (!mounted || validationRunRef.current !== runId) return;
-          if (attempt < 4) validateSession(sess, runId, attempt + 1);
-          else applySession(null);
+          if (attempt < 8) validateSession(sess, runId, attempt + 1);
+          else {
+            void supabase.auth.refreshSession().then(({ data: { session: refreshed } }) => {
+              if (!mounted || validationRunRef.current !== runId) return;
+              if (refreshed?.user?.id === sess.user.id) applySession(refreshed);
+              else applySession(null);
+            }).catch(() => applySession(null));
+          }
         });
       }, attempt === 0 ? 0 : 300);
     }
@@ -242,6 +252,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setRoles(userRoles);
         setSession(nextSession);
         setUser(nextSession.user ?? null);
+        setLoading(true);
+
+        const { data: { user: validatedUser }, error: validationError } = await supabase.auth.getUser();
+        if (validationError || validatedUser?.id !== nextSession.user?.id) {
+          return { error: 'تعذر تثبيت الجلسة، حاول تسجيل الدخول مرة أخرى' };
+        }
+
+        authReadyRef.current = true;
+        validatedUserIdRef.current = validatedUser.id;
         setLoading(false);
       }
       return {};
