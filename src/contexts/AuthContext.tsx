@@ -180,7 +180,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (sess) {
         applySession(sess);
       } else if (event === 'INITIAL_SESSION') {
-        applySession(null);
+        setTimeout(() => {
+          if (!mounted) return;
+          void supabase.auth.getSession().then(({ data: { session: stored } }) => {
+            if (!mounted) return;
+            applySession(stored);
+          });
+        }, 300);
       }
     });
 
