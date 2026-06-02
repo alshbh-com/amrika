@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
-  const skipNextRoleFetch = useRef(false);
+  const lastSessionRef = useRef<Session | null>(null);
 
   const fetchRoles = async (userId: string): Promise<AppRole[]> => {
     try {
@@ -89,49 +89,61 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
+    const applySession = (sess: Session | null, markReady = true) => {
+      if (!mounted) return;
+      lastSessionRef.current = sess;
+      setSession(sess);
+      setUser(sess?.user ?? null);
+
+      if (sess?.user) {
+        const cached = readCachedRoles(sess.user.id);
+        if (cached.length > 0) setRoles(cached);
+        if (markReady) setLoading(false);
+        setTimeout(() => {
+          if (mounted) void refreshRolesSafely(sess.user.id);
+        }, 0);
+        return;
+      }
+
+      setRoles([]);
+      if (markReady) setLoading(false);
+    };
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, sess) => {
       if (!mounted) return;
 
       if (event === 'SIGNED_OUT') {
-        clearCachedRoles();
-        setSession(null);
-        setUser(null);
-        setRoles([]);
-        setLoading(false);
+        // Supabase can emit a transient SIGNED_OUT while restoring/refreshing
+        // storage on slower desktop browsers. Confirm storage is truly empty
+        // before clearing the app state, otherwise the owner gets bounced out.
+        setTimeout(() => {
+          if (!mounted) return;
+          void supabase.auth.getSession().then(({ data: { session: storedSession } }) => {
+            if (!mounted) return;
+            if (storedSession) {
+              applySession(storedSession);
+              return;
+            }
+
+            clearCachedRoles();
+            lastSessionRef.current = null;
+            setSession(null);
+            setUser(null);
+            setRoles([]);
+            setLoading(false);
+          });
+        }, 100);
         return;
       }
 
       if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-        setSession(sess);
-        setUser(sess?.user ?? null);
-
-        if (sess?.user) {
-          // Use cached roles immediately so we never bounce the user while
-          // the network request is in flight.
-          const cached = readCachedRoles(sess.user.id);
-          if (cached.length > 0) setRoles(cached);
-          setLoading(false);
-
-          if (skipNextRoleFetch.current) {
-            skipNextRoleFetch.current = false;
-            return;
-          }
-          // Fire-and-forget background refresh (no await inside the callback).
-          setTimeout(() => {
-            if (mounted) void refreshRolesSafely(sess.user.id);
-          }, 0);
-        } else {
-          setRoles([]);
-          setLoading(false);
-        }
+        applySession(sess);
       }
     });
 
     supabase.auth.getSession().then(({ data: { session: sess } }) => {
       if (!mounted) return;
-      // INITIAL_SESSION already handles state; only resolve loading if there
-      // is genuinely no session so the login screen can show.
-      if (!sess) setLoading(false);
+      applySession(sess);
     });
 
     return () => {
@@ -161,13 +173,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const userRoles = (data.roles || []) as AppRole[];
         setRoles(userRoles);
         if (data.session.user?.id) writeCachedRoles(data.session.user.id, userRoles);
-        skipNextRoleFetch.current = true;
         
         const { error: setErr } = await supabase.auth.setSession({
           access_token: data.session.access_token,
           refresh_token: data.session.refresh_token,
         });
         if (setErr) return { error: 'تعذر حفظ الجلسة، حاول مرة أخرى' };
+
+        lastSessionRef.current = data.session;
+        setSession(data.session);
+        setUser(data.session.user ?? null);
+        setLoading(false);
       }
       return {};
     } catch {

@@ -8,9 +8,9 @@ interface Props {
 }
 
 export default function ProtectedRoute({ children, requiredRole }: Props) {
-  const { session, loading, isOwner, isAdmin, isOwnerOrAdmin, isCourier, isOffice } = useAuth();
+  const { session, roles, loading, isOwner, isAdmin, isOwnerOrAdmin, isOffice } = useAuth();
 
-  if (loading) {
+  if (loading || (session && requiredRole && roles.length === 0)) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
