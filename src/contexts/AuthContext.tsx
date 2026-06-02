@@ -136,16 +136,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      if (event === 'USER_DELETED') {
-        clearCachedRoles();
-        lastSessionRef.current = null;
-        setSession(null);
-        setUser(null);
-        setRoles([]);
-        setLoading(false);
-        return;
-      }
-
       if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
         applySession(sess);
       }
@@ -183,13 +173,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const userRoles = (data.roles || []) as AppRole[];
         setRoles(userRoles);
         if (data.session.user?.id) writeCachedRoles(data.session.user.id, userRoles);
-        skipNextRoleFetch.current = true;
         
         const { error: setErr } = await supabase.auth.setSession({
           access_token: data.session.access_token,
           refresh_token: data.session.refresh_token,
         });
         if (setErr) return { error: 'تعذر حفظ الجلسة، حاول مرة أخرى' };
+
+        lastSessionRef.current = data.session;
+        setSession(data.session);
+        setUser(data.session.user ?? null);
+        setLoading(false);
       }
       return {};
     } catch {
