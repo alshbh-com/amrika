@@ -55,7 +55,7 @@ interface ChatContact {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, session, loading } = useAuth();
   const { canView } = usePermissions();
   const [stats, setStats] = useState({ total: 0, open: 0, delivered: 0, returned: 0, todayCount: 0, todayShipping: 0 });
 
@@ -74,9 +74,10 @@ export default function Dashboard() {
   );
 
   useEffect(() => {
+    if (loading || !session) return;
     loadStats();
     loadChatContacts();
-  }, []);
+  }, [loading, session?.user.id]);
 
   // Chat realtime
   useEffect(() => {
@@ -102,9 +103,10 @@ export default function Dashboard() {
 
   // Refresh unread count periodically
   useEffect(() => {
+    if (loading || !session) return;
     const interval = setInterval(loadChatContacts, 15000);
     return () => clearInterval(interval);
-  }, []);
+  }, [loading, session?.user.id]);
 
   useEffect(() => {
     if (chatScrollRef.current) chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
@@ -116,6 +118,7 @@ export default function Dashboard() {
       supabase.from('orders').select('id, is_closed, status_id, price, delivery_price, shipping_paid, created_at'),
       supabase.from('order_statuses').select('id, name'),
     ]);
+    if (allRes.error || statusRes.error) return;
     const all = allRes.data || [];
     const sts = statusRes.data || [];
     const deliveredIds = sts.filter(s => s.name === 'تم التسليم' || s.name === 'تسليم جزئي').map(s => s.id);
@@ -132,6 +135,7 @@ export default function Dashboard() {
   };
 
   const loadChatContacts = async () => {
+    if (!user?.id) return;
     const { data: roles } = await supabase.from('user_roles').select('user_id, role');
     if (!roles) return;
     const userIds = [...new Set(roles.map(r => r.user_id))].filter(id => id !== user?.id);
