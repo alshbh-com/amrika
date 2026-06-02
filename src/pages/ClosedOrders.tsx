@@ -13,7 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { moveToTrash } from '@/lib/trashUtils';
 
 export default function ClosedOrders() {
-  const { isOwner } = useAuth();
+  const { isOwner, session, loading } = useAuth();
   const [orders, setOrders] = useState<any[]>([]);
   const [couriers, setCouriers] = useState<Record<string, string>>({});
   const [offices, setOffices] = useState<any[]>([]);
@@ -21,7 +21,12 @@ export default function ClosedOrders() {
   const [officeFilter, setOfficeFilter] = useState('all');
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
-  useEffect(() => { loadOrders(); loadCouriers(); loadOffices(); }, []);
+  useEffect(() => {
+    if (loading || !session) return;
+    loadOrders();
+    loadCouriers();
+    loadOffices();
+  }, [loading, session?.user.id]);
 
   const loadCouriers = async () => {
     const { data } = await supabase.from('profiles').select('id, full_name');
@@ -34,7 +39,7 @@ export default function ClosedOrders() {
 
   const loadOffices = async () => {
     const { data } = await supabase.from('offices').select('id, name').order('name');
-    setOffices(data || []);
+    if (data) setOffices(data);
   };
 
   const loadOrders = async () => {
@@ -44,7 +49,7 @@ export default function ClosedOrders() {
       .eq('is_closed', true)
       .order('updated_at', { ascending: false })
       .limit(500);
-    setOrders(data || []);
+    if (data) setOrders(data);
   };
 
   const filtered = orders.filter(o => {

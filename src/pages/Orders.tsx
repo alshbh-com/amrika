@@ -16,7 +16,7 @@ import { logActivity } from '@/lib/activityLogger';
 import { moveToTrash } from '@/lib/trashUtils';
 
 export default function Orders() {
-  const { isOwner } = useAuth();
+  const { isOwner, session, loading } = useAuth();
   const [orders, setOrders] = useState<any[]>([]);
   const [search, setSearch] = useState('');
   const [filterOffice, setFilterOffice] = useState('all');
@@ -28,7 +28,11 @@ export default function Orders() {
   const [statuses, setStatuses] = useState<any[]>([]);
   const [editOrder, setEditOrder] = useState<any>(null);
 
-  useEffect(() => { loadOrders(); loadFilters(); }, []);
+  useEffect(() => {
+    if (loading || !session) return;
+    loadOrders();
+    loadFilters();
+  }, [loading, session?.user.id]);
 
   const loadFilters = async () => {
     const [o, r, s] = await Promise.all([
@@ -36,6 +40,7 @@ export default function Orders() {
       supabase.from('user_roles').select('user_id').eq('role', 'courier'),
       supabase.from('order_statuses').select('*').order('sort_order'),
     ]);
+    if (o.error || r.error || s.error) return;
     setOffices(o.data || []);
     setStatuses(s.data || []);
     if (r.data && r.data.length > 0) {
@@ -54,7 +59,7 @@ export default function Orders() {
       .eq('is_closed', false)
       .order('created_at', { ascending: false })
       .limit(500);
-    setOrders(data || []);
+    if (data) setOrders(data);
   };
 
   const filtered = orders.filter(o => {

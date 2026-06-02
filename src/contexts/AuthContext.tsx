@@ -61,6 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
+  const sessionRef = useRef<Session | null>(null);
   const manualLogoutRef = useRef(false);
   const authReadyRef = useRef(false);
   const validatedUserIdRef = useRef<string | null>(null);
@@ -107,16 +108,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             return;
           }
 
-          if (attempt < 4) {
+          if (attempt < 8) {
             validateSession(sess, runId, attempt + 1);
             return;
           }
 
-          applySession(null);
+          void supabase.auth.refreshSession().then(({ data: { session: refreshed } }) => {
+            if (!mounted || validationRunRef.current !== runId) return;
+            if (refreshed?.user?.id === sess.user.id) applySession(refreshed);
+            else applySession(null);
+          });
         }).catch(() => {
           if (!mounted || validationRunRef.current !== runId) return;
-          if (attempt < 4) validateSession(sess, runId, attempt + 1);
-          else applySession(null);
+          if (attempt < 8) validateSession(sess, runId, attempt + 1);
+          else {
+            void supabase.auth.refreshSession().then(({ data: { session: refreshed } }) => {
+              if (!mounted || validationRunRef.current !== runId) return;
+              if (refreshed?.user?.id === sess.user.id) applySession(refreshed);
+              else applySession(null);
+            }).catch(() => applySession(null));
+          }
         });
       }, attempt === 0 ? 0 : 300);
     }
@@ -128,6 +139,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!mounted) return;
 
       if (sess?.user) {
+        sessionRef.current = sess;
         setSession(sess);
         setUser(sess.user);
         const cached = readCachedRoles(sess.user.id);
@@ -144,9 +156,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       // No session. Only clear app state on a genuine sign-out.
+      if (!manualLogoutRef.current && sessionRef.current) {
+        setLoading(false);
+        void supabase.auth.refreshSession().then(({ data: { session: refreshed } }) => {
+          if (refreshed?.user) applySession(refreshed);
+        }).catch(() => undefined);
+        return;
+      }
       authReadyRef.current = false;
       validatedUserIdRef.current = null;
       validationRunRef.current += 1;
+      sessionRef.current = null;
       setSession(null);
       setUser(null);
       setRoles([]);
@@ -170,6 +190,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           void supabase.auth.getSession().then(({ data: { session: stored } }) => {
             if (!mounted) return;
             if (stored) applySession(stored);
+            else if (sessionRef.current) applySession(sessionRef.current);
             else applySession(null);
           });
         }, 250);
@@ -239,9 +260,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         const nextSession = savedSession.session ?? data.session;
         if (nextSession.user?.id) writeCachedRoles(nextSession.user.id, userRoles);
+        sessionRef.current = nextSession;
         setRoles(userRoles);
         setSession(nextSession);
         setUser(nextSession.user ?? null);
+        setLoading(true);
+
+        const { data: { user: validatedUser }, error: validationError } = await supabase.auth.getUser();
+        if (validationError || validatedUser?.id !== nextSession.user?.id) {
+          return { error: 'تعذر تثبيت الجلسة، حاول تسجيل الدخول مرة أخرى' };
+        }
+
+        authReadyRef.current = true;
+        validatedUserIdRef.current = validatedUser.id;
         setLoading(false);
       }
       return {};
@@ -253,6 +284,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     manualLogoutRef.current = true;
     clearCachedRoles();
+    sessionRef.current = null;
     setRoles([]);
     setSession(null);
     setUser(null);

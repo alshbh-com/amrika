@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function Settings() {
-  const { isOwner } = useAuth();
+  const { isOwner, session, loading } = useAuth();
   const [statuses, setStatuses] = useState<any[]>([]);
 
   // User creation
@@ -30,13 +30,14 @@ export default function Settings() {
   const [savingPassword, setSavingPassword] = useState(false);
 
   useEffect(() => {
+    if (loading || !session) return;
     loadStatuses();
     loadAccountingPassword();
-  }, []);
+  }, [loading, session?.user.id]);
 
   const loadStatuses = async () => {
-    const { data } = await supabase.from('order_statuses').select('*').order('sort_order');
-    setStatuses(data || []);
+    const { data, error } = await supabase.from('order_statuses').select('*').order('sort_order');
+    if (!error && data) setStatuses(data);
   };
 
   const loadAccountingPassword = async () => {
