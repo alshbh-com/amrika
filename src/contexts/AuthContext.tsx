@@ -93,7 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
-    const validateSession = (sess: Session, runId: number, attempt = 0) => {
+    function validateSession(sess: Session, runId: number, attempt = 0) {
       setTimeout(() => {
         if (!mounted || validationRunRef.current !== runId) return;
         void supabase.auth.getUser().then(({ data: { user: validatedUser } }) => {
@@ -119,12 +119,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           else applySession(null);
         });
       }, attempt === 0 ? 0 : 300);
-    };
+    }
 
     // Apply a session coming from Supabase's native (localStorage) persistence.
     // We wait until getUser() validates the restored token before pages mount,
     // so authenticated tables do not briefly query as anon and overwrite data.
-    const applySession = (sess: Session | null) => {
+    function applySession(sess: Session | null) {
       if (!mounted) return;
 
       if (sess?.user) {
@@ -152,7 +152,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setRoles([]);
       clearCachedRoles();
       setLoading(false);
-    };
+    }
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, sess) => {
       if (!mounted) return;
