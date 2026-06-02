@@ -192,7 +192,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     supabase.auth.getSession().then(({ data: { session: sess } }) => {
       if (!mounted) return;
-      applySession(sess);
+      if (sess) {
+        applySession(sess);
+        return;
+      }
+      setTimeout(() => {
+        if (!mounted) return;
+        void supabase.auth.getSession().then(({ data: { session: stored } }) => {
+          if (!mounted) return;
+          applySession(stored);
+        });
+      }, 300);
     });
 
     return () => {
