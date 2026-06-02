@@ -13,7 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { logActivity } from '@/lib/activityLogger';
 
 export default function UnassignedOrders() {
-  const { isOwner } = useAuth();
+  const { isOwner, session, loading } = useAuth();
   const [orders, setOrders] = useState<any[]>([]);
   const [couriers, setCouriers] = useState<any[]>([]);
   const [statuses, setStatuses] = useState<any[]>([]);
@@ -23,10 +23,13 @@ export default function UnassignedOrders() {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
+    if (loading || !session) return;
     loadOrders();
     loadCouriers();
-    supabase.from('order_statuses').select('*').order('sort_order').then(({ data }) => setStatuses(data || []));
-  }, []);
+    supabase.from('order_statuses').select('*').order('sort_order').then(({ data, error }) => {
+      if (!error && data) setStatuses(data);
+    });
+  }, [loading, session?.user.id]);
 
   const loadCouriers = async () => {
     const { data: roles } = await supabase.from('user_roles').select('user_id').eq('role', 'courier');
@@ -42,7 +45,7 @@ export default function UnassignedOrders() {
       .select('*, order_statuses(name, color), offices(name)')
       .eq('is_closed', false)
       .order('created_at', { ascending: false });
-    setOrders(data || []);
+    if (data) setOrders(data);
   };
 
   const filtered = orders.filter(o => {
