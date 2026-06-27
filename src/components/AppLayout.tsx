@@ -38,6 +38,7 @@ export default function AppLayout() {
       <div className="flex min-h-screen w-full">
         <AppSidebar />
         <SidebarInset className="flex-1 min-w-0">
+          <LockCountdownBanner />
           <header className="flex h-12 items-center border-b border-border/50 px-4 glass-effect">
             <SidebarTrigger />
           </header>
