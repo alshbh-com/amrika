@@ -4,6 +4,7 @@ import { usePermissions, urlToSectionKey } from '@/hooks/usePermissions';
 import { AppSidebar } from '@/components/AppSidebar';
 import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
 import SectionGuide from '@/components/SectionGuide';
+import LockCountdownBanner from '@/components/LockCountdownBanner';
 import { sectionGuides } from '@/lib/sectionGuides';
 
 function getGuideKey(pathname: string): string | null {
