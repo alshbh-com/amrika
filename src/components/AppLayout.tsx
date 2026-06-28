@@ -4,7 +4,6 @@ import { usePermissions, urlToSectionKey } from '@/hooks/usePermissions';
 import { AppSidebar } from '@/components/AppSidebar';
 import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
 import SectionGuide from '@/components/SectionGuide';
-import LockCountdownBanner from '@/components/LockCountdownBanner';
 import { sectionGuides } from '@/lib/sectionGuides';
 
 function getGuideKey(pathname: string): string | null {
@@ -38,7 +37,6 @@ export default function AppLayout() {
       <div className="flex min-h-screen w-full">
         <AppSidebar />
         <SidebarInset className="flex-1 min-w-0">
-          <LockCountdownBanner />
           <header className="flex h-12 items-center border-b border-border/50 px-4 glass-effect">
             <SidebarTrigger />
           </header>
