@@ -69,7 +69,9 @@ function LoginRedirect() {
 }
 
 const App = () => (
+  SYSTEM_LOCKED ? <SystemLocked /> : (
   <QueryClientProvider client={queryClient}>
+
     <TooltipProvider>
       <Toaster />
       <Sonner />
