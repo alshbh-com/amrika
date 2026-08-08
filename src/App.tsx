@@ -55,8 +55,11 @@ import TrashBin from "@/pages/TrashBin";
 import SystemGuide from "@/pages/SystemGuide";
 import OfficeDailyExpenses from "@/pages/OfficeDailyExpenses";
 import NotFound from "./pages/NotFound";
+import SystemLocked from "@/pages/SystemLocked";
+import { SYSTEM_LOCKED } from "@/config/systemLock";
 
 const queryClient = new QueryClient();
+
 
 function LoginRedirect() {
   const { session, loading } = useAuth();
