@@ -89,10 +89,86 @@ export type Database = {
         }
         Relationships: []
       }
+      branch_simple_diaries: {
+        Row: {
+          arrived: number
+          branch_user_id: string
+          created_at: string
+          deleted_at: string | null
+          descent_discount: number
+          descent_orders_count: number
+          descent_pieces_count: number
+          descent_value: number
+          diary_date: string
+          id: string
+          new_diary_orders_count: number
+          new_diary_pieces_count: number
+          new_diary_value: number
+          notes: string | null
+          previous_him: number
+          previous_us: number
+          reject_shipping: number
+          return_count: number
+          return_pieces_count: number
+          return_value: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          arrived?: number
+          branch_user_id: string
+          created_at?: string
+          deleted_at?: string | null
+          descent_discount?: number
+          descent_orders_count?: number
+          descent_pieces_count?: number
+          descent_value?: number
+          diary_date?: string
+          id?: string
+          new_diary_orders_count?: number
+          new_diary_pieces_count?: number
+          new_diary_value?: number
+          notes?: string | null
+          previous_him?: number
+          previous_us?: number
+          reject_shipping?: number
+          return_count?: number
+          return_pieces_count?: number
+          return_value?: number
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          arrived?: number
+          branch_user_id?: string
+          created_at?: string
+          deleted_at?: string | null
+          descent_discount?: number
+          descent_orders_count?: number
+          descent_pieces_count?: number
+          descent_value?: number
+          diary_date?: string
+          id?: string
+          new_diary_orders_count?: number
+          new_diary_pieces_count?: number
+          new_diary_value?: number
+          notes?: string | null
+          previous_him?: number
+          previous_us?: number
+          reject_shipping?: number
+          return_count?: number
+          return_pieces_count?: number
+          return_value?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cash_flow_entries: {
         Row: {
           amount: number | null
           created_at: string
+          created_by: string | null
           entry_date: string | null
           id: string
           notes: string | null
@@ -103,6 +179,7 @@ export type Database = {
         Insert: {
           amount?: number | null
           created_at?: string
+          created_by?: string | null
           entry_date?: string | null
           id?: string
           notes?: string | null
@@ -113,6 +190,7 @@ export type Database = {
         Update: {
           amount?: number | null
           created_at?: string
+          created_by?: string | null
           entry_date?: string | null
           id?: string
           notes?: string | null
@@ -136,18 +214,21 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          updated_at: string
         }
         Insert: {
           agreement_price?: number | null
           created_at?: string
           id?: string
           name: string
+          updated_at?: string
         }
         Update: {
           agreement_price?: number | null
           created_at?: string
           id?: string
           name?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -158,6 +239,7 @@ export type Database = {
           created_at: string
           id: string
           notes: string | null
+          paid_by: string | null
         }
         Insert: {
           amount?: number | null
@@ -165,6 +247,7 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
+          paid_by?: string | null
         }
         Update: {
           amount?: number | null
@@ -172,6 +255,7 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
+          paid_by?: string | null
         }
         Relationships: [
           {
@@ -182,6 +266,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      courier_applications: {
+        Row: {
+          address: string
+          agreed_amount: number
+          coverage_areas: string
+          created_at: string
+          created_by: string | null
+          current_job: string
+          full_name: string
+          id: string
+          notes: string
+          phone: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string
+          agreed_amount?: number
+          coverage_areas?: string
+          created_at?: string
+          created_by?: string | null
+          current_job?: string
+          full_name: string
+          id?: string
+          notes?: string
+          phone?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          agreed_amount?: number
+          coverage_areas?: string
+          created_at?: string
+          created_by?: string | null
+          current_job?: string
+          full_name?: string
+          id?: string
+          notes?: string
+          phone?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       courier_bonuses: {
         Row: {
@@ -216,6 +345,7 @@ export type Database = {
       courier_collections: {
         Row: {
           amount: number | null
+          collected_by: string | null
           courier_id: string | null
           created_at: string
           id: string
@@ -223,6 +353,7 @@ export type Database = {
         }
         Insert: {
           amount?: number | null
+          collected_by?: string | null
           courier_id?: string | null
           created_at?: string
           id?: string
@@ -230,6 +361,7 @@ export type Database = {
         }
         Update: {
           amount?: number | null
+          collected_by?: string | null
           courier_id?: string | null
           created_at?: string
           id?: string
@@ -244,6 +376,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      courier_leaves: {
+        Row: {
+          approved_by: string | null
+          courier_id: string
+          created_at: string
+          id: string
+          leave_date: string
+          reason: string | null
+          status: string
+        }
+        Insert: {
+          approved_by?: string | null
+          courier_id: string
+          created_at?: string
+          id?: string
+          leave_date: string
+          reason?: string | null
+          status?: string
+        }
+        Update: {
+          approved_by?: string | null
+          courier_id?: string
+          created_at?: string
+          id?: string
+          leave_date?: string
+          reason?: string | null
+          status?: string
+        }
+        Relationships: []
       }
       courier_locations: {
         Row: {
@@ -272,6 +434,216 @@ export type Database = {
         }
         Relationships: []
       }
+      courier_ratings: {
+        Row: {
+          courier_id: string
+          created_at: string
+          id: string
+          month: number
+          notes: string | null
+          rated_by: string | null
+          rating: number
+          year: number
+        }
+        Insert: {
+          courier_id: string
+          created_at?: string
+          id?: string
+          month: number
+          notes?: string | null
+          rated_by?: string | null
+          rating?: number
+          year: number
+        }
+        Update: {
+          courier_id?: string
+          created_at?: string
+          id?: string
+          month?: number
+          notes?: string | null
+          rated_by?: string | null
+          rating?: number
+          year?: number
+        }
+        Relationships: []
+      }
+      courier_rewards: {
+        Row: {
+          courier_id: string
+          created_at: string
+          deliveries_count: number
+          id: string
+          is_paid: boolean
+          reward_amount: number
+          reward_date: string
+        }
+        Insert: {
+          courier_id: string
+          created_at?: string
+          deliveries_count?: number
+          id?: string
+          is_paid?: boolean
+          reward_amount?: number
+          reward_date?: string
+        }
+        Update: {
+          courier_id?: string
+          created_at?: string
+          deliveries_count?: number
+          id?: string
+          is_paid?: boolean
+          reward_amount?: number
+          reward_date?: string
+        }
+        Relationships: []
+      }
+      courier_violations: {
+        Row: {
+          courier_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          reason: string
+          violation_type: string
+        }
+        Insert: {
+          courier_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          reason?: string
+          violation_type?: string
+        }
+        Update: {
+          courier_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          reason?: string
+          violation_type?: string
+        }
+        Relationships: []
+      }
+      customer_complaints: {
+        Row: {
+          complaint_text: string
+          created_at: string
+          created_by: string | null
+          customer_name: string
+          customer_phone: string
+          id: string
+          order_id: string | null
+          resolution: string | null
+          resolved_at: string | null
+          status: string
+        }
+        Insert: {
+          complaint_text?: string
+          created_at?: string
+          created_by?: string | null
+          customer_name?: string
+          customer_phone?: string
+          id?: string
+          order_id?: string | null
+          resolution?: string | null
+          resolved_at?: string | null
+          status?: string
+        }
+        Update: {
+          complaint_text?: string
+          created_at?: string
+          created_by?: string | null
+          customer_name?: string
+          customer_phone?: string
+          id?: string
+          order_id?: string | null
+          resolution?: string | null
+          resolved_at?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
+      customers: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          phone: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          phone: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          phone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      daily_closing_diaries: {
+        Row: {
+          created_at: string
+          diary_date: string
+          id: string
+          notes: string
+          office_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          diary_date?: string
+          id?: string
+          notes?: string
+          office_id: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          diary_date?: string
+          id?: string
+          notes?: string
+          office_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      daily_closing_entries: {
+        Row: {
+          copied_from_diary_id: string | null
+          created_at: string
+          diary_id: string
+          id: string
+          note: string
+          order_id: string
+        }
+        Insert: {
+          copied_from_diary_id?: string | null
+          created_at?: string
+          diary_id: string
+          id?: string
+          note?: string
+          order_id: string
+        }
+        Update: {
+          copied_from_diary_id?: string | null
+          created_at?: string
+          diary_id?: string
+          id?: string
+          note?: string
+          order_id?: string
+        }
+        Relationships: []
+      }
       delivery_prices: {
         Row: {
           created_at: string
@@ -280,6 +652,7 @@ export type Database = {
           office_id: string
           pickup_price: number | null
           price: number | null
+          updated_at: string
         }
         Insert: {
           created_at?: string
@@ -288,6 +661,7 @@ export type Database = {
           office_id: string
           pickup_price?: number | null
           price?: number | null
+          updated_at?: string
         }
         Update: {
           created_at?: string
@@ -296,6 +670,7 @@ export type Database = {
           office_id?: string
           pickup_price?: number | null
           price?: number | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -311,7 +686,9 @@ export type Database = {
         Row: {
           balance: number | null
           cash_arrived_entries: Json | null
+          closed_at: string | null
           created_at: string
+          deleted_at: string | null
           diary_date: string
           diary_number: number
           id: string
@@ -320,6 +697,8 @@ export type Database = {
           lock_status_updates: boolean | null
           manual_arrived_total: number | null
           office_id: string
+          orange_extra_due: number
+          orange_extra_due_reason: string
           prevent_new_orders: boolean | null
           previous_due: number | null
           show_postponed_due: boolean | null
@@ -328,7 +707,9 @@ export type Database = {
         Insert: {
           balance?: number | null
           cash_arrived_entries?: Json | null
+          closed_at?: string | null
           created_at?: string
+          deleted_at?: string | null
           diary_date?: string
           diary_number?: number
           id?: string
@@ -337,6 +718,8 @@ export type Database = {
           lock_status_updates?: boolean | null
           manual_arrived_total?: number | null
           office_id: string
+          orange_extra_due?: number
+          orange_extra_due_reason?: string
           prevent_new_orders?: boolean | null
           previous_due?: number | null
           show_postponed_due?: boolean | null
@@ -345,7 +728,9 @@ export type Database = {
         Update: {
           balance?: number | null
           cash_arrived_entries?: Json | null
+          closed_at?: string | null
           created_at?: string
+          deleted_at?: string | null
           diary_date?: string
           diary_number?: number
           id?: string
@@ -354,6 +739,8 @@ export type Database = {
           lock_status_updates?: boolean | null
           manual_arrived_total?: number | null
           office_id?: string
+          orange_extra_due?: number
+          orange_extra_due_reason?: string
           prevent_new_orders?: boolean | null
           previous_due?: number | null
           show_postponed_due?: boolean | null
@@ -371,37 +758,73 @@ export type Database = {
       }
       diary_orders: {
         Row: {
+          copied_from_diary_id: string | null
+          copied_from_diary_order_id: string | null
           created_at: string
           diary_id: string
           id: string
+          locked_status: boolean
+          manual_arrived: number | null
           manual_collected: number | null
+          manual_delivery_commission: number | null
+          manual_pickup: number | null
+          manual_reject_no_ship: number | null
+          manual_return_penalty: number | null
           manual_return_status: string | null
           manual_shipping: number | null
+          manual_shipping_amount: number | null
+          manual_shipping_diff: number | null
+          manual_total_amount: number | null
           n_column: string | null
+          notes: string
           order_id: string
           partial_amount: number | null
           status_inside_diary: string | null
         }
         Insert: {
+          copied_from_diary_id?: string | null
+          copied_from_diary_order_id?: string | null
           created_at?: string
           diary_id: string
           id?: string
+          locked_status?: boolean
+          manual_arrived?: number | null
           manual_collected?: number | null
+          manual_delivery_commission?: number | null
+          manual_pickup?: number | null
+          manual_reject_no_ship?: number | null
+          manual_return_penalty?: number | null
           manual_return_status?: string | null
           manual_shipping?: number | null
+          manual_shipping_amount?: number | null
+          manual_shipping_diff?: number | null
+          manual_total_amount?: number | null
           n_column?: string | null
+          notes?: string
           order_id: string
           partial_amount?: number | null
           status_inside_diary?: string | null
         }
         Update: {
+          copied_from_diary_id?: string | null
+          copied_from_diary_order_id?: string | null
           created_at?: string
           diary_id?: string
           id?: string
+          locked_status?: boolean
+          manual_arrived?: number | null
           manual_collected?: number | null
+          manual_delivery_commission?: number | null
+          manual_pickup?: number | null
+          manual_reject_no_ship?: number | null
+          manual_return_penalty?: number | null
           manual_return_status?: string | null
           manual_shipping?: number | null
+          manual_shipping_amount?: number | null
+          manual_shipping_diff?: number | null
+          manual_total_amount?: number | null
           n_column?: string | null
+          notes?: string
           order_id?: string
           partial_amount?: number | null
           status_inside_diary?: string | null
@@ -464,6 +887,114 @@ export type Database = {
           },
         ]
       }
+      fuel_entries: {
+        Row: {
+          amount: number
+          courier_id: string
+          created_at: string
+          created_by: string | null
+          entry_date: string
+          id: string
+          liters: number | null
+          notes: string | null
+        }
+        Insert: {
+          amount?: number
+          courier_id: string
+          created_at?: string
+          created_by?: string | null
+          entry_date?: string
+          id?: string
+          liters?: number | null
+          notes?: string | null
+        }
+        Update: {
+          amount?: number
+          courier_id?: string
+          created_at?: string
+          created_by?: string | null
+          entry_date?: string
+          id?: string
+          liters?: number | null
+          notes?: string | null
+        }
+        Relationships: []
+      }
+      internal_tickets: {
+        Row: {
+          assigned_to: string | null
+          closed_at: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          priority: string
+          status: string
+          title: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          closed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          priority?: string
+          status?: string
+          title?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          closed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          priority?: string
+          status?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      inventory_items: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          item_name: string
+          location: string | null
+          min_quantity: number
+          notes: string | null
+          quantity: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          item_name?: string
+          location?: string | null
+          min_quantity?: number
+          notes?: string | null
+          quantity?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          item_name?: string
+          location?: string | null
+          min_quantity?: number
+          notes?: string | null
+          quantity?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           created_at: string
@@ -488,6 +1019,39 @@ export type Database = {
           message?: string
           receiver_id?: string
           sender_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          link: string | null
+          message: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          message?: string
+          title?: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          message?: string
+          title?: string
+          type?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -578,6 +1142,7 @@ export type Database = {
           id: string
           notes: string | null
           office_id: string
+          paid_by: string | null
           type: string | null
         }
         Insert: {
@@ -586,6 +1151,7 @@ export type Database = {
           id?: string
           notes?: string | null
           office_id: string
+          paid_by?: string | null
           type?: string | null
         }
         Update: {
@@ -594,6 +1160,7 @@ export type Database = {
           id?: string
           notes?: string | null
           office_id?: string
+          paid_by?: string | null
           type?: string | null
         }
         Relationships: [
@@ -605,6 +1172,135 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      office_report_hidden_orders: {
+        Row: {
+          created_at: string
+          hidden_by: string | null
+          id: string
+          order_id: string
+        }
+        Insert: {
+          created_at?: string
+          hidden_by?: string | null
+          id?: string
+          order_id: string
+        }
+        Update: {
+          created_at?: string
+          hidden_by?: string | null
+          id?: string
+          order_id?: string
+        }
+        Relationships: []
+      }
+      office_report_notes: {
+        Row: {
+          created_at: string
+          id: string
+          note: string
+          order_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note?: string
+          order_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note?: string
+          order_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      office_simple_diaries: {
+        Row: {
+          arrived: number
+          created_at: string
+          created_by: string | null
+          customer_due_direction: string
+          deleted_at: string | null
+          descent_discount: number
+          descent_orders_count: number
+          descent_pieces_count: number
+          descent_value: number
+          diary_date: string
+          id: string
+          net_diary_direction: string
+          net_with_descent_direction: string
+          new_diary_orders_count: number
+          new_diary_pieces_count: number
+          new_diary_value: number
+          notes: string | null
+          office_id: string
+          previous_him: number
+          previous_us: number
+          reject_shipping: number
+          return_count: number
+          return_pieces_count: number
+          return_value: number
+          updated_at: string
+        }
+        Insert: {
+          arrived?: number
+          created_at?: string
+          created_by?: string | null
+          customer_due_direction?: string
+          deleted_at?: string | null
+          descent_discount?: number
+          descent_orders_count?: number
+          descent_pieces_count?: number
+          descent_value?: number
+          diary_date?: string
+          id?: string
+          net_diary_direction?: string
+          net_with_descent_direction?: string
+          new_diary_orders_count?: number
+          new_diary_pieces_count?: number
+          new_diary_value?: number
+          notes?: string | null
+          office_id: string
+          previous_him?: number
+          previous_us?: number
+          reject_shipping?: number
+          return_count?: number
+          return_pieces_count?: number
+          return_value?: number
+          updated_at?: string
+        }
+        Update: {
+          arrived?: number
+          created_at?: string
+          created_by?: string | null
+          customer_due_direction?: string
+          deleted_at?: string | null
+          descent_discount?: number
+          descent_orders_count?: number
+          descent_pieces_count?: number
+          descent_value?: number
+          diary_date?: string
+          id?: string
+          net_diary_direction?: string
+          net_with_descent_direction?: string
+          new_diary_orders_count?: number
+          new_diary_pieces_count?: number
+          new_diary_value?: number
+          notes?: string | null
+          office_id?: string
+          previous_him?: number
+          previous_us?: number
+          reject_shipping?: number
+          return_count?: number
+          return_pieces_count?: number
+          return_value?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       offices: {
         Row: {
@@ -680,6 +1376,45 @@ export type Database = {
           },
         ]
       }
+      order_schedules: {
+        Row: {
+          any_time: boolean
+          created_at: string
+          id: string
+          notes: string
+          order_id: string
+          scheduled_date: string | null
+          time_from: string | null
+          time_to: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          any_time?: boolean
+          created_at?: string
+          id?: string
+          notes?: string
+          order_id: string
+          scheduled_date?: string | null
+          time_from?: string | null
+          time_to?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          any_time?: boolean
+          created_at?: string
+          id?: string
+          notes?: string
+          order_id?: string
+          scheduled_date?: string | null
+          time_from?: string | null
+          time_to?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       order_status_history: {
         Row: {
           changed_at: string
@@ -715,6 +1450,7 @@ export type Database = {
           color: string | null
           created_at: string
           id: string
+          is_fixed: boolean
           name: string
           sort_order: number | null
         }
@@ -722,6 +1458,7 @@ export type Database = {
           color?: string | null
           created_at?: string
           id?: string
+          is_fixed?: boolean
           name: string
           sort_order?: number | null
         }
@@ -729,6 +1466,7 @@ export type Database = {
           color?: string | null
           created_at?: string
           id?: string
+          is_fixed?: boolean
           name?: string
           sort_order?: number | null
         }
@@ -737,32 +1475,46 @@ export type Database = {
       orders: {
         Row: {
           address: string | null
+          approved_at: string | null
+          approved_by: string | null
           barcode: string | null
+          branch_label: string | null
           closed_at: string | null
           closed_by: string | null
           color: string | null
           company_id: string | null
+          confirmation_status: string | null
+          confirmation_token: string | null
           courier_assigned_at: string | null
           courier_closed_by: string | null
+          courier_commission: number | null
           courier_id: string | null
+          courier_name_snapshot: string | null
           created_at: string
+          created_by: string | null
           customer_code: string | null
+          customer_id: string | null
           customer_name: string | null
           customer_phone: string | null
           delivery_price: number | null
+          governorate: string | null
           id: string
           is_closed: boolean | null
           is_courier_closed: boolean | null
+          is_pending_approval: boolean
           is_settled: boolean | null
           last_modified_by: string | null
           notes: string | null
           office_id: string | null
+          office_name_snapshot: string | null
           partial_amount: number | null
+          payment_method: string | null
           price: number | null
           priority: string | null
           product_id: string | null
           product_name: string | null
           quantity: number | null
+          return_status: string | null
           returned_to_sender: boolean
           returned_to_sender_at: string | null
           returned_to_sender_by: string | null
@@ -774,32 +1526,46 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
           barcode?: string | null
+          branch_label?: string | null
           closed_at?: string | null
           closed_by?: string | null
           color?: string | null
           company_id?: string | null
+          confirmation_status?: string | null
+          confirmation_token?: string | null
           courier_assigned_at?: string | null
           courier_closed_by?: string | null
+          courier_commission?: number | null
           courier_id?: string | null
+          courier_name_snapshot?: string | null
           created_at?: string
+          created_by?: string | null
           customer_code?: string | null
+          customer_id?: string | null
           customer_name?: string | null
           customer_phone?: string | null
           delivery_price?: number | null
+          governorate?: string | null
           id?: string
           is_closed?: boolean | null
           is_courier_closed?: boolean | null
+          is_pending_approval?: boolean
           is_settled?: boolean | null
           last_modified_by?: string | null
           notes?: string | null
           office_id?: string | null
+          office_name_snapshot?: string | null
           partial_amount?: number | null
+          payment_method?: string | null
           price?: number | null
           priority?: string | null
           product_id?: string | null
           product_name?: string | null
           quantity?: number | null
+          return_status?: string | null
           returned_to_sender?: boolean
           returned_to_sender_at?: string | null
           returned_to_sender_by?: string | null
@@ -811,32 +1577,46 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
           barcode?: string | null
+          branch_label?: string | null
           closed_at?: string | null
           closed_by?: string | null
           color?: string | null
           company_id?: string | null
+          confirmation_status?: string | null
+          confirmation_token?: string | null
           courier_assigned_at?: string | null
           courier_closed_by?: string | null
+          courier_commission?: number | null
           courier_id?: string | null
+          courier_name_snapshot?: string | null
           created_at?: string
+          created_by?: string | null
           customer_code?: string | null
+          customer_id?: string | null
           customer_name?: string | null
           customer_phone?: string | null
           delivery_price?: number | null
+          governorate?: string | null
           id?: string
           is_closed?: boolean | null
           is_courier_closed?: boolean | null
+          is_pending_approval?: boolean
           is_settled?: boolean | null
           last_modified_by?: string | null
           notes?: string | null
           office_id?: string | null
+          office_name_snapshot?: string | null
           partial_amount?: number | null
+          payment_method?: string | null
           price?: number | null
           priority?: string | null
           product_id?: string | null
           product_name?: string | null
           quantity?: number | null
+          return_status?: string | null
           returned_to_sender?: boolean
           returned_to_sender_at?: string | null
           returned_to_sender_by?: string | null
@@ -877,24 +1657,75 @@ export type Database = {
           },
         ]
       }
+      price_list_items: {
+        Row: {
+          created_at: string
+          governorate: string
+          id: string
+          pickup_price: number
+          price: number
+          price_list_id: string
+        }
+        Insert: {
+          created_at?: string
+          governorate?: string
+          id?: string
+          pickup_price?: number
+          price?: number
+          price_list_id: string
+        }
+        Update: {
+          created_at?: string
+          governorate?: string
+          id?: string
+          pickup_price?: number
+          price?: number
+          price_list_id?: string
+        }
+        Relationships: []
+      }
+      price_lists: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           created_at: string
           id: string
           name: string
           quantity: number | null
+          updated_at: string
         }
         Insert: {
           created_at?: string
           id?: string
           name: string
           quantity?: number | null
+          updated_at?: string
         }
         Update: {
           created_at?: string
           id?: string
           name?: string
           quantity?: number | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -906,6 +1737,7 @@ export type Database = {
           created_at: string
           full_name: string | null
           id: string
+          is_active: boolean
           login_code: string | null
           notes: string | null
           office_id: string | null
@@ -921,6 +1753,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id: string
+          is_active?: boolean
           login_code?: string | null
           notes?: string | null
           office_id?: string | null
@@ -936,6 +1769,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          is_active?: boolean
           login_code?: string | null
           notes?: string | null
           office_id?: string | null
@@ -956,21 +1790,27 @@ export type Database = {
       }
       scan_session_items: {
         Row: {
+          created_at: string
           id: string
           order_id: string
           scanned_at: string
+          scanned_code: string | null
           session_id: string
         }
         Insert: {
+          created_at?: string
           id?: string
           order_id: string
           scanned_at?: string
+          scanned_code?: string | null
           session_id: string
         }
         Update: {
+          created_at?: string
           id?: string
           order_id?: string
           scanned_at?: string
+          scanned_code?: string | null
           session_id?: string
         }
         Relationships: [
@@ -985,28 +1825,94 @@ export type Database = {
       }
       scan_sessions: {
         Row: {
+          actions: Json
           ended_at: string | null
           id: string
           notes: string | null
+          orders_count: number
           started_at: string
           total_count: number
           user_id: string | null
         }
         Insert: {
+          actions?: Json
           ended_at?: string | null
           id?: string
           notes?: string | null
+          orders_count?: number
           started_at?: string
           total_count?: number
           user_id?: string | null
         }
         Update: {
+          actions?: Json
           ended_at?: string | null
           id?: string
           notes?: string | null
+          orders_count?: number
           started_at?: string
           total_count?: number
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      status_change_notes: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          note: string
+          order_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string
+          order_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string
+          order_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          created_at: string
+          due_date: string | null
+          id: string
+          is_done: boolean
+          notes: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          is_done?: boolean
+          notes?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          is_done?: boolean
+          notes?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -1049,12 +1955,83 @@ export type Database = {
         }
         Relationships: []
       }
+      vehicles: {
+        Row: {
+          brand: string | null
+          courier_id: string
+          created_at: string
+          id: string
+          model: string | null
+          next_maintenance_date: string | null
+          notes: string | null
+          plate_number: string | null
+          vehicle_type: string
+          year: number | null
+        }
+        Insert: {
+          brand?: string | null
+          courier_id: string
+          created_at?: string
+          id?: string
+          model?: string | null
+          next_maintenance_date?: string | null
+          notes?: string | null
+          plate_number?: string | null
+          vehicle_type?: string
+          year?: number | null
+        }
+        Update: {
+          brand?: string | null
+          courier_id?: string
+          created_at?: string
+          id?: string
+          model?: string | null
+          next_maintenance_date?: string | null
+          notes?: string | null
+          plate_number?: string | null
+          vehicle_type?: string
+          year?: number | null
+        }
+        Relationships: []
+      }
+      whatsapp_messages: {
+        Row: {
+          created_at: string
+          id: string
+          message_text: string
+          order_id: string
+          phone: string
+          sent_at: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message_text: string
+          order_id: string
+          phone: string
+          sent_at?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message_text?: string
+          order_id?: string
+          phone?: string
+          sent_at?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       cleanup_old_activity_logs: { Args: never; Returns: undefined }
+      has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
+      is_owner_or_admin: { Args: { _user_id: string }; Returns: boolean }
       log_activity: {
         Args: { _action: string; _details?: Json }
         Returns: undefined
